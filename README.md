@@ -1,6 +1,6 @@
 # Apex
 
-Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stability and rollback are built in.
+Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stability and rollback are built in. Hardware-aware adaptive tweaks (v1.2+).
 
 ## Philosophy
 
@@ -8,7 +8,7 @@ Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stab
 - **Tiered control** — Safe / Advanced / Extreme
 - **Customizable** — individual options, not one-click only
 - **Reversible** — restore points and selective rollback
-- **Hardware aware** — detects CPU, GPU, and RAM on startup (v1.1+)
+- **Hardware aware** — detects CPU, GPU, RAM, laptop; adapts service split, memory compression, hybrid policy, and HAGS notes
 
 ## Tiers
 
@@ -23,9 +23,17 @@ Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stab
 1. Download the latest release.
 2. Keep `Apex.bat` and `Apex.ps1` in the same folder.
 3. Right-click `Apex.bat` → Run as administrator.
-4. Hardware info prints on start. Use number keys to toggle options.
+4. Hardware info prints on start. Adaptive decisions are logged when CPU or HAGS is applied.
 5. `s` = Safe, `ad` = Advanced, `e` = Extreme.
-6. `d` = dry run. `r` = revert. `a` = apply. `c` = scan (includes hardware).
+6. `d` = dry run. `r` = revert. `a` = apply. `c` = scan.
+
+## Adaptive behavior (v1.2)
+
+- Service split threshold scales with core count (higher on 8+ and 16+ core CPUs).
+- Memory compression is disabled only if RAM ≥ 16 GB.
+- Hybrid CPUs (Intel 12th gen+, Core Ultra, or high thread/core ratio) get performance-core preference.
+- Discrete GPU detection is noted when HAGS is enabled.
+- Laptop detection is logged; DC power settings already match AC.
 
 ## Safety
 
@@ -36,6 +44,6 @@ Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stab
 
 ## Status
 
-Core engine is functional (v1.1). Hardware detection present. Next phases: modular modules, adaptive tweaks based on hardware, performance metrics, Expert mode UI.
+Core engine functional (v1.2). Hardware detection and adaptive tweaks present. Next: modular modules, performance metrics, Expert mode UI.
 
 MIT License. Not affiliated with Talon or any other optimizer.
