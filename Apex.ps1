@@ -1,4 +1,4 @@
-# Apex 1.4
+# Apex 1.5
 $ErrorActionPreference = 'Continue'
 $Log = Join-Path $PSScriptRoot 'Apex-log.txt'
 $TickFile = Join-Path $PSScriptRoot 'Apex-ticks.txt'
@@ -221,7 +221,7 @@ function Invoke-Revert {
   Write-Log 'Revert finished. Restart. Store apps stay removed. Edge stays removed if you uninstalled it. Nagle, priority, overlay, prefetch, and dynamic tick were cleared.'
 }
 function Invoke-Apply {
-  Write-Log 'Apex 1.4 apply'
+  Write-Log 'Apex 1.5 apply'
   if (Get-Command Write-MetricsReport -ErrorAction SilentlyContinue) { Write-MetricsReport 'before' $MetricsFile }
   Write-Host 'Apex safety: restore point will be attempted. High-risk items still require yes.'
   $picked = @($opts.Keys | Where-Object { $opts[$_] })
@@ -233,7 +233,7 @@ function Invoke-Apply {
   $before += (powercfg /getactivescheme)
   foreach ($svc in @('DiagTrack','SysMain','WSearch','wuauserv','WinDefend')) { try { $before += "$svc $((Get-Service $svc -ErrorAction Stop).StartType)" } catch { $before += "$svc missing" } }
   Set-Content -Path $Before -Value $before
-  try { Enable-ComputerRestore -Drive 'C:\' -ErrorAction SilentlyContinue; Checkpoint-Computer -Description 'Apex 1.4 before changes' -RestorePointType 'MODIFY_SETTINGS' -ErrorAction Stop; Write-Log 'Restore point created.' } catch { Write-Log 'Restore point skipped.' }
+  try { Enable-ComputerRestore -Drive 'C:\' -ErrorAction SilentlyContinue; Checkpoint-Computer -Description 'Apex 1.5 before changes' -RestorePointType 'MODIFY_SETTINGS' -ErrorAction Stop; Write-Log 'Restore point created.' } catch { Write-Log 'Restore point skipped.' }
   if ($opts.apps) { Remove-InboxApps }
   if ($opts.ads) {
     foreach ($n in @('SubscribedContent-338389Enabled','SubscribedContent-310093Enabled','SubscribedContent-338388Enabled','SubscribedContent-338393Enabled','SubscribedContent-353694Enabled','SubscribedContent-353696Enabled','SilentInstalledAppsEnabled','SystemPaneSuggestionsEnabled','SoftLandingEnabled')) { Set-Dword 'HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' $n 0 }
@@ -369,23 +369,24 @@ function Invoke-Apply {
 }
 Assert-Admin
 if (Test-Path $TickFile) { Load-Ticks }
-Write-Log 'Apex 1.4 started'
+Write-Log 'Apex 1.5 started'
 $hw = Get-HardwareInfo
 Write-Host "CPU: $($hw.CPU) ($($hw.Cores)c/$($hw.Threads)t)" -ForegroundColor DarkCyan
 Write-Host "GPU: $($hw.GPU)" -ForegroundColor DarkCyan
 Write-Host "RAM: $($hw.RAM) | $($hw.OS)" -ForegroundColor DarkCyan
 while ($true) {
   Write-Host ''
-  Write-Host 'Apex 1.4'
+  Write-Host 'Apex 1.5'
   Show-Opts
-  Write-Host 's Safe   ad Advanced   e Extreme   x Expert'
-  Write-Host 'a apply   d dry run   r revert   c scan   w report   f on-only   n clear   s save   l load   h help   x expert   0 exit'
+  Write-Host 's Safe   ad Advanced   e Extreme   x Expert   p Profile'
+  Write-Host 'a apply   d dry run   r revert   c scan   w report   f on-only   n clear   s save   l load   h help   x expert   p profile   0 exit'
   $choice = Read-Host 'Choose'
   switch ($choice) {
     's' { Set-Preset 'safe' }
     'ad' { Set-Preset 'advanced' }
     'e' { Set-Preset 'extreme' }
     'x' { Show-Expert }
+    'p' { if (Get-Command Show-HardwareProfile -ErrorAction SilentlyContinue) { Show-HardwareProfile; if ((Read-Host 'Apply recommended Advanced preset? Type yes') -eq 'yes') { Apply-RecommendedProfile } } else { Write-Host 'Profiles module not loaded.' } }
     'a' { Invoke-Apply }
     'd' { Invoke-Dry }
     'r' { Invoke-Revert }
