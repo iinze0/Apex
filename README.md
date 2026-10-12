@@ -1,6 +1,6 @@
 # Apex
 
-Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stability and rollback are built in. Hardware-aware adaptive tweaks. Modular structure. Expert mode, hardware profiles, before/after comparison, and hardware warnings (v1.6).
+Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stability and rollback are built in. Hardware-aware adaptive tweaks. Modular structure. Expert mode, hardware profiles, before/after comparison, hardware warnings, and simple benchmark (v1.7).
 
 ## Philosophy
 
@@ -10,7 +10,7 @@ Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stab
 - **Reversible** — restore points and selective rollback
 - **Hardware aware** — detects CPU, GPU, RAM, laptop; adapts settings and warns on high-risk
 - **Modular** — `Modules/` folder, loaded automatically
-- **Measurable** — metrics logged before and after; comparison available
+- **Measurable** — metrics, comparison, and simple in-session benchmark
 
 ## Tiers
 
@@ -28,15 +28,16 @@ Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stab
 2. Keep `Apex.bat`, `Apex.ps1`, and the `Modules` folder together.
 3. Right-click `Apex.bat` → Run as administrator.
 4. Hardware info prints on start. Metrics are logged on apply.
-5. `s` = Safe, `ad` = Advanced, `e` = Extreme, `x` = Expert, `p` = Profile, `m` = Metrics comparison, `w` = Warnings.
+5. `s` = Safe, `ad` = Advanced, `e` = Extreme, `x` = Expert, `p` = Profile, `m` = Metrics, `w` = Warnings, `b` = Benchmark.
 6. `d` = dry run. `r` = revert. `a` = apply. `c` = scan.
 
 ## Modules
 
-- `Modules/Hardware.ps1` — CPU, GPU, RAM, OS, laptop detection
-- `Modules/Metrics.ps1` — snapshot and before/after comparison
+- `Modules/Hardware.ps1` — detection
+- `Modules/Metrics.ps1` — snapshot and comparison
 - `Modules/Profiles.ps1` — hardware profiles
-- `Modules/Warnings.ps1` — hardware-specific warnings and high-risk confirmation
+- `Modules/Warnings.ps1` — warnings and high-risk confirmation
+- `Modules/Benchmark.ps1` — simple in-session benchmark
 
 ## Adaptive behavior and warnings
 
@@ -45,7 +46,7 @@ Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stab
 - Hybrid CPUs get performance-core preference.
 - Discrete GPU noted for HAGS.
 - Laptop detection logged.
-- Hardware warnings shown on demand and can block high-risk apply until confirmed.
+- Hardware warnings can add an extra check on high-risk apply.
 
 ## Safety
 
@@ -57,6 +58,6 @@ Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stab
 
 ## Status
 
-Core engine functional (v1.6). Before/after comparison and hardware warnings present. Next: additional modules or refinements as needed.
+Core engine functional (v1.7). Simple benchmark present. Next: refinements or additional modules as needed.
 
 MIT License. Not affiliated with Talon or any other optimizer.
