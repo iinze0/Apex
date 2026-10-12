@@ -1,12 +1,12 @@
 # Apex
 
-Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stability and rollback are built in. Hardware-aware adaptive tweaks. Modular structure. Expert mode, hardware profiles, before/after comparison, hardware warnings, and simple benchmark (v1.7).
+Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stability and rollback are built in. Hardware-aware adaptive tweaks. Modular structure. Expert mode, hardware profiles, custom profiles, before/after comparison, hardware warnings, and simple benchmark (v1.8).
 
 ## Philosophy
 
 - **Safe first** — nothing destructive runs without explicit confirmation
 - **Tiered control** — Safe / Advanced / Extreme / Expert / Profile
-- **Customizable** — individual options, not one-click only
+- **Customizable** — individual options and custom saved profiles
 - **Reversible** — restore points and selective rollback
 - **Hardware aware** — detects CPU, GPU, RAM, laptop; adapts settings and warns on high-risk
 - **Modular** — `Modules/` folder, loaded automatically
@@ -29,7 +29,8 @@ Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stab
 3. Right-click `Apex.bat` → Run as administrator.
 4. Hardware info prints on start. Metrics are logged on apply.
 5. `s` = Safe, `ad` = Advanced, `e` = Extreme, `x` = Expert, `p` = Profile, `m` = Metrics, `w` = Warnings, `b` = Benchmark.
-6. `d` = dry run. `r` = revert. `a` = apply. `c` = scan.
+6. `cs` = save custom profile, `cl` = load custom profile, `clist` = list profiles.
+7. `d` = dry run. `r` = revert. `a` = apply. `c` = scan.
 
 ## Modules
 
@@ -38,6 +39,7 @@ Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stab
 - `Modules/Profiles.ps1` — hardware profiles
 - `Modules/Warnings.ps1` — warnings and high-risk confirmation
 - `Modules/Benchmark.ps1` — simple in-session benchmark
+- `Modules/CustomProfiles.ps1` — save/load/list custom tick profiles
 
 ## Adaptive behavior and warnings
 
@@ -58,6 +60,6 @@ Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stab
 
 ## Status
 
-Core engine functional (v1.7). Simple benchmark present. Next: refinements or additional modules as needed.
+Core engine functional (v1.8). Custom profiles present. Next: refinements or additional modules as needed.
 
 MIT License. Not affiliated with Talon or any other optimizer.
