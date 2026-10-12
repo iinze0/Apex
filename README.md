@@ -1,6 +1,6 @@
 # Apex
 
-Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stability and rollback are built in. Hardware-aware adaptive tweaks. Modular structure. Expert mode, hardware profiles, custom profiles, before/after comparison, hardware warnings, and simple benchmark (v1.8).
+Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stability and rollback are built in. Hardware-aware adaptive tweaks. Modular structure. Expert mode, hardware profiles, custom profiles, before/after comparison, hardware warnings, simple benchmark, and quick status (v1.9).
 
 ## Philosophy
 
@@ -10,7 +10,7 @@ Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stab
 - **Reversible** — restore points and selective rollback
 - **Hardware aware** — detects CPU, GPU, RAM, laptop; adapts settings and warns on high-risk
 - **Modular** — `Modules/` folder, loaded automatically
-- **Measurable** — metrics, comparison, and simple in-session benchmark
+- **Measurable** — metrics, comparison, benchmark, and status overview
 
 ## Tiers
 
@@ -28,7 +28,7 @@ Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stab
 2. Keep `Apex.bat`, `Apex.ps1`, and the `Modules` folder together.
 3. Right-click `Apex.bat` → Run as administrator.
 4. Hardware info prints on start. Metrics are logged on apply.
-5. `s` = Safe, `ad` = Advanced, `e` = Extreme, `x` = Expert, `p` = Profile, `m` = Metrics, `w` = Warnings, `b` = Benchmark.
+5. `s` = Safe, `ad` = Advanced, `e` = Extreme, `x` = Expert, `p` = Profile, `m` = Metrics, `w` = Warnings, `b` = Benchmark, `st` = Status.
 6. `cs` = save custom profile, `cl` = load custom profile, `clist` = list profiles.
 7. `d` = dry run. `r` = revert. `a` = apply. `c` = scan.
 
@@ -40,6 +40,7 @@ Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stab
 - `Modules/Warnings.ps1` — warnings and high-risk confirmation
 - `Modules/Benchmark.ps1` — simple in-session benchmark
 - `Modules/CustomProfiles.ps1` — save/load/list custom tick profiles
+- `Modules/Status.ps1` — quick status overview
 
 ## Adaptive behavior and warnings
 
@@ -60,6 +61,6 @@ Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stab
 
 ## Status
 
-Core engine functional (v1.8). Custom profiles present. Next: refinements or additional modules as needed.
+Core engine functional (v1.9). Quick status overview present. Next: refinements or additional modules as needed.
 
 MIT License. Not affiliated with Talon or any other optimizer.
