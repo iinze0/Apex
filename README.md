@@ -8,6 +8,7 @@ Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stab
 - **Tiered control** — Safe / Advanced / Extreme
 - **Customizable** — individual options, not one-click only
 - **Reversible** — restore points and selective rollback
+- **Hardware aware** — detects CPU, GPU, and RAM on startup (v1.1+)
 
 ## Tiers
 
@@ -22,8 +23,9 @@ Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stab
 1. Download the latest release.
 2. Keep `Apex.bat` and `Apex.ps1` in the same folder.
 3. Right-click `Apex.bat` → Run as administrator.
-4. Use number keys to toggle options. `s` loads Safe, `a` loads Advanced, `e` loads Extreme.
-5. `d` = dry run. `r` = revert. `a` = apply.
+4. Hardware info prints on start. Use number keys to toggle options.
+5. `s` = Safe, `ad` = Advanced, `e` = Extreme.
+6. `d` = dry run. `r` = revert. `a` = apply. `c` = scan (includes hardware).
 
 ## Safety
 
@@ -34,6 +36,6 @@ Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stab
 
 ## Status
 
-Core engine is functional. Next phases: modular modules, hardware detection, performance metrics, Expert mode UI.
+Core engine is functional (v1.1). Hardware detection present. Next phases: modular modules, adaptive tweaks based on hardware, performance metrics, Expert mode UI.
 
 MIT License. Not affiliated with Talon or any other optimizer.
