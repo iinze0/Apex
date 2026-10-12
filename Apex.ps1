@@ -326,12 +326,12 @@ while ($true) {
   Write-Host ''
   Write-Host 'Apex 1.0'
   Show-Opts
-  Write-Host 's Safe   a Advanced   e Extreme'
+  Write-Host 's Safe   ad Advanced   e Extreme'
   Write-Host 'a apply   d dry run   r revert   c scan   w report   f on-only   n clear   s save   l load   h help   0 exit'
   $choice = Read-Host 'Choose'
   switch ($choice) {
     's' { Set-Preset 'safe' }
-    'a' { Set-Preset 'advanced' }
+    'ad' { Set-Preset 'advanced' }
     'e' { Set-Preset 'extreme' }
     'a' { Invoke-Apply }
     'd' { Invoke-Dry }
@@ -339,7 +339,7 @@ while ($true) {
     'c' { Invoke-Scan }
     's' { Save-Ticks }
     'l' { Load-Ticks }
-    'h' { Write-Host 's Safe: ads, tasks, privacy, telemetry, visuals, mouse, sticky'; Write-Host 'a Advanced: Safe + apps, search, xbox, gamedvr, cpu, hags, focus'; Write-Host 'e Extreme: Advanced + idle, startup, hibernate, bluetooth, print (high-risk still ask yes)' }
+    'h' { Write-Host 's Safe: ads, tasks, privacy, telemetry, visuals, mouse, sticky'; Write-Host 'ad Advanced: Safe + apps, search, xbox, gamedvr, cpu, hags, focus'; Write-Host 'e Extreme: Advanced + idle, startup, hibernate, bluetooth, print (high-risk still ask yes)' }
     'w' { Write-Report }
     'f' { Show-Opts -OnOnly }
     'n' { foreach($k in @($opts.Keys)){ $opts[$k]=$false }; Write-Host 'Cleared.' }
