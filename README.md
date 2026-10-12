@@ -1,6 +1,6 @@
 # Apex
 
-Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stability and rollback are built in. Hardware-aware adaptive tweaks. Modular structure. Expert mode, hardware profiles, custom profiles, before/after comparison, hardware warnings, simple benchmark, and quick status (v1.9).
+Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stability and rollback are built in. Hardware-aware adaptive tweaks. Modular structure. Expert mode, hardware profiles, custom profiles, before/after comparison, hardware warnings, simple benchmark, and quick status (v2.0).
 
 ## Philosophy
 
@@ -11,6 +11,7 @@ Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stab
 - **Hardware aware** — detects CPU, GPU, RAM, laptop; adapts settings and warns on high-risk
 - **Modular** — `Modules/` folder, loaded automatically
 - **Measurable** — metrics, comparison, benchmark, and status overview
+- **Single file** — `Apex.ps1` self-elevates; no separate launcher needed
 
 ## Tiers
 
@@ -24,9 +25,9 @@ Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stab
 
 ## Quick start
 
-1. Download the latest release (include the `Modules` folder).
-2. Keep `Apex.bat`, `Apex.ps1`, and the `Modules` folder together.
-3. Right-click `Apex.bat` → Run as administrator.
+1. Download `Apex.ps1` (and the `Modules` folder if present).
+2. Right-click `Apex.ps1` → Run with PowerShell (or double-click if execution policy allows).
+3. If not elevated, it prompts for admin and relaunches.
 4. Hardware info prints on start. Metrics are logged on apply.
 5. `s` = Safe, `ad` = Advanced, `e` = Extreme, `x` = Expert, `p` = Profile, `m` = Metrics, `w` = Warnings, `b` = Benchmark, `st` = Status.
 6. `cs` = save custom profile, `cl` = load custom profile, `clist` = list profiles.
@@ -61,6 +62,6 @@ Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stab
 
 ## Status
 
-Core engine functional (v1.9). Quick status overview present. Next: refinements or additional modules as needed.
+Core engine functional (v2.0). Self-elevating single script. Next: refinements or additional modules as needed.
 
 MIT License. Not affiliated with Talon or any other optimizer.
