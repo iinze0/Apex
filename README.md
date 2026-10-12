@@ -2,6 +2,8 @@
 
 Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stability and rollback are built in. Hardware-aware adaptive tweaks. Modular structure. Expert mode, hardware profiles, custom profiles, before/after comparison, hardware warnings, simple benchmark, quick status, and last-run history (v2.1).
 
+**Windows-only.** Requires Windows PowerShell 5.1+ (not PowerShell Core on Linux or macOS).
+
 ## Philosophy
 
 - **Safe first** — nothing destructive runs without explicit confirmation
@@ -9,7 +11,7 @@ Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stab
 - **Customizable** — individual options and custom saved profiles
 - **Reversible** — restore points and selective rollback
 - **Hardware aware** — detects CPU, GPU, RAM, laptop; adapts settings and warns on high-risk
-- **Modular** — `Modules/` folder, loaded automatically
+- **Modular** — `Modules/` folder, loaded automatically (core runs with fallbacks if missing)
 - **Measurable** — metrics, comparison, benchmark, status, and history
 - **Single file** — `Apex.ps1` self-elevates; no separate launcher needed
 
@@ -31,7 +33,7 @@ Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stab
 4. Hardware info prints on start. Metrics are logged on apply.
 5. `s` = Safe, `ad` = Advanced, `e` = Extreme, `x` = Expert, `p` = Profile, `m` = Metrics, `w` = Warnings, `b` = Benchmark, `st` = Status, `hi` = History.
 6. `cs` = save custom profile, `cl` = load custom profile, `clist` = list profiles.
-7. `d` = dry run. `r` = revert. `a` = apply. `c` = scan.
+7. `d` = dry run (analysis only). `r` = revert. `a` = apply. `c` = scan. `sv` = save ticks. `rp` = report.
 
 ## Modules
 
@@ -58,11 +60,12 @@ Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stab
 - Restore point created on apply
 - High-risk options require a second `yes`
 - Hardware warnings add an extra check when present
-- Dry-run mode shows what would change
+- Dry-run mode shows what would change (no modifications)
 - Revert restores services and policies (does not reinstall removed apps)
+- Core script runs with safe fallbacks if Modules folder is absent
 
 ## Status
 
-Core engine functional (v2.1). Self-elevating single script. Last-run history present. Next: refinements or additional modules as needed.
+Core engine functional (v2.1). Self-elevating single script. Last-run history present. Menu keys clarified. Next: refinements or additional modules as needed.
 
 MIT License. Not affiliated with Talon or any other optimizer.
