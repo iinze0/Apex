@@ -11,5 +11,6 @@ Modular structure for Apex. The main `Apex.ps1` loads every `.ps1` in this folde
 | `Benchmark.ps1` | Simple in-session benchmark. |
 | `CustomProfiles.ps1` | Save, load, and list custom tick profiles. |
 | `Status.ps1` | Quick status overview (services, power, key registry, hardware). |
+| `History.ps1` | Last-run summary and recent log. |
 
 Future modules can be added here and will be loaded automatically.
