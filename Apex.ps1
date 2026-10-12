@@ -1,4 +1,4 @@
-# Apex 2.0
+# Apex 2.1
 $ErrorActionPreference = 'Continue'
 $Log = Join-Path $PSScriptRoot 'Apex-log.txt'
 $TickFile = Join-Path $PSScriptRoot 'Apex-ticks.txt'
@@ -228,7 +228,7 @@ function Invoke-Revert {
   Write-Log 'Revert finished. Restart. Store apps stay removed. Edge stays removed if you uninstalled it. Nagle, priority, overlay, prefetch, and dynamic tick were cleared.'
 }
 function Invoke-Apply {
-  Write-Log 'Apex 2.0 apply'
+  Write-Log 'Apex 2.1 apply'
   if (Get-Command Write-MetricsReport -ErrorAction SilentlyContinue) { Write-MetricsReport 'before' $MetricsFile }
   Write-Host 'Apex safety: restore point will be attempted. High-risk items still require yes.'
   $highRisk = @('idle','temp','startup','ipv6','onedrive','browser','updates','defender') | Where-Object { $opts[$_] }
@@ -244,7 +244,7 @@ function Invoke-Apply {
   $before += (powercfg /getactivescheme)
   foreach ($svc in @('DiagTrack','SysMain','WSearch','wuauserv','WinDefend')) { try { $before += "$svc $((Get-Service $svc -ErrorAction Stop).StartType)" } catch { $before += "$svc missing" } }
   Set-Content -Path $Before -Value $before
-  try { Enable-ComputerRestore -Drive 'C:\' -ErrorAction SilentlyContinue; Checkpoint-Computer -Description 'Apex 2.0 before changes' -RestorePointType 'MODIFY_SETTINGS' -ErrorAction Stop; Write-Log 'Restore point created.' } catch { Write-Log 'Restore point skipped.' }
+  try { Enable-ComputerRestore -Drive 'C:\' -ErrorAction SilentlyContinue; Checkpoint-Computer -Description 'Apex 2.1 before changes' -RestorePointType 'MODIFY_SETTINGS' -ErrorAction Stop; Write-Log 'Restore point created.' } catch { Write-Log 'Restore point skipped.' }
   if ($opts.apps) { Remove-InboxApps }
   if ($opts.ads) {
     foreach ($n in @('SubscribedContent-338389Enabled','SubscribedContent-310093Enabled','SubscribedContent-338388Enabled','SubscribedContent-338393Enabled','SubscribedContent-353694Enabled','SubscribedContent-353696Enabled','SilentInstalledAppsEnabled','SystemPaneSuggestionsEnabled','SoftLandingEnabled')) { Set-Dword 'HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' $n 0 }
@@ -380,17 +380,17 @@ function Invoke-Apply {
 }
 Assert-Admin
 if (Test-Path $TickFile) { Load-Ticks }
-Write-Log 'Apex 2.0 started'
+Write-Log 'Apex 2.1 started'
 $hw = Get-HardwareInfo
 Write-Host "CPU: $($hw.CPU) ($($hw.Cores)c/$($hw.Threads)t)" -ForegroundColor DarkCyan
 Write-Host "GPU: $($hw.GPU)" -ForegroundColor DarkCyan
 Write-Host "RAM: $($hw.RAM) | $($hw.OS)" -ForegroundColor DarkCyan
 while ($true) {
   Write-Host ''
-  Write-Host 'Apex 2.0'
+  Write-Host 'Apex 2.1'
   Show-Opts
-  Write-Host 's Safe   ad Advanced   e Extreme   x Expert   p Profile   m Metrics   w Warnings   b Benchmark   st Status   cs SaveProfile   cl LoadProfile   clist ListProfiles'
-  Write-Host 'a apply   d dry run   r revert   c scan   w report   f on-only   n clear   s save   l load   h help   x expert   p profile   m metrics   w warnings   b benchmark   st status   cs saveprofile   cl loadprofile   clist listprofiles   0 exit'
+  Write-Host 's Safe   ad Advanced   e Extreme   x Expert   p Profile   m Metrics   w Warnings   b Benchmark   st Status   hi History   cs SaveProfile   cl LoadProfile   clist ListProfiles'
+  Write-Host 'a apply   d dry run   r revert   c scan   w report   f on-only   n clear   s save   l load   h help   x expert   p profile   m metrics   w warnings   b benchmark   st status   hi history   cs saveprofile   cl loadprofile   clist listprofiles   0 exit'
   $choice = Read-Host 'Choose'
   switch ($choice) {
     's' { Set-Preset 'safe' }
@@ -402,6 +402,7 @@ while ($true) {
     'w' { if (Get-Command Show-HardwareWarnings -ErrorAction SilentlyContinue) { Show-HardwareWarnings } else { Write-Host 'Warnings module not loaded.' } }
     'b' { if (Get-Command Invoke-SimpleBenchmark -ErrorAction SilentlyContinue) { Invoke-SimpleBenchmark } else { Write-Host 'Benchmark module not loaded.' } }
     'st' { if (Get-Command Show-Status -ErrorAction SilentlyContinue) { Show-Status } else { Write-Host 'Status module not loaded.' } }
+    'hi' { if (Get-Command Show-LastRun -ErrorAction SilentlyContinue) { Show-LastRun } else { Write-Host 'History module not loaded.' } }
     'cs' { if (Get-Command Save-CustomProfile -ErrorAction SilentlyContinue) { Save-CustomProfile } else { Write-Host 'CustomProfiles module not loaded.' } }
     'cl' { if (Get-Command Load-CustomProfile -ErrorAction SilentlyContinue) { Load-CustomProfile } else { Write-Host 'CustomProfiles module not loaded.' } }
     'clist' { if (Get-Command List-CustomProfiles -ErrorAction SilentlyContinue) { List-CustomProfiles } else { Write-Host 'CustomProfiles module not loaded.' } }
