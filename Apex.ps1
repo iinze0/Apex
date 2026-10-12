@@ -1,4 +1,4 @@
-# Apex 1.3
+# Apex 1.4
 $ErrorActionPreference = 'Continue'
 $Log = Join-Path $PSScriptRoot 'Apex-log.txt'
 $TickFile = Join-Path $PSScriptRoot 'Apex-ticks.txt'
@@ -22,6 +22,22 @@ $labels = [ordered]@{ apps='Remove inbox apps and deprovision them'; ads='Ads, t
 function Show-Opts([switch]$OnOnly) { $i=1; $on=0; foreach($k in $opts.Keys){ if($opts[$k]){ $on++ }; if(-not $OnOnly -or $opts[$k]){ $status = if($opts[$k]){'ON '}else{'off'}; $color = if($opts[$k]){'Green'}else{'DarkGray'}; Write-Host ('{0,2}  [{1}]  {2}' -f $i, $status, $labels[$k]) -ForegroundColor $color }; $i++ }; Write-Host "$on on" -ForegroundColor Cyan }
 function Invoke-Key([int]$n){ $keys=@($opts.Keys); if($n -ge 1 -and $n -le $keys.Count){ $opts[$keys[$n-1]] = -not $opts[$keys[$n-1]] } }
 function Set-Preset([string]$name){ foreach($k in @($opts.Keys)){ $opts[$k]=$false }; switch($name){ 'safe'{ foreach($k in @('ads','tasks','privacy','telemetry','visuals','mouse','sticky')){ $opts[$k]=$true } } 'advanced'{ foreach($k in @('apps','ads','tasks','telemetry','search','xbox','gamedvr','cpu','hags','visuals','mouse','sticky','focus')){ $opts[$k]=$true } } 'extreme'{ foreach($k in @('apps','ads','tasks','privacy','telemetry','search','xbox','gamedvr','cpu','idle','hags','visuals','mouse','sticky','focus','startup','hibernate','bluetooth','print')){ $opts[$k]=$true } } } }
+function Show-Expert {
+  Write-Host '--- Expert mode ---' -ForegroundColor Yellow
+  Write-Host 'High-risk items (require yes on apply):' -ForegroundColor Red
+  $high = @('idle','temp','startup','ipv6','onedrive','browser','updates','defender')
+  $i = 1
+  foreach ($k in $opts.Keys) {
+    if ($k -in $high) {
+      $status = if($opts[$k]){'ON '}else{'off'}
+      Write-Host ("  {0,2}  [{1}]  {2}" -f $i, $status, $labels[$k]) -ForegroundColor Red
+    }
+    $i++
+  }
+  Write-Host 'Type a number to toggle, or press Enter to return.'
+  $ex = Read-Host 'Expert'
+  if ($ex -match '^\d+$') { Invoke-Key ([int]$ex) }
+}
 function Save-Ticks { $on = @($opts.Keys | Where-Object { $opts[$_] }); Set-Content -Path $TickFile -Value ($on -join ','); Write-Log "Saved ticks: $($on -join ', ')" }
 function Load-Ticks { if (-not (Test-Path $TickFile)) { Write-Host 'No saved ticks.'; return }; foreach($k in @($opts.Keys)){ $opts[$k]=$false }; foreach($k in ((Get-Content $TickFile -Raw) -split ',')){ $name=$k.Trim(); if($opts.Contains($name)){ $opts[$name]=$true } }; Write-Log 'Loaded saved ticks.' }
 function Remove-InboxApps {
@@ -205,7 +221,7 @@ function Invoke-Revert {
   Write-Log 'Revert finished. Restart. Store apps stay removed. Edge stays removed if you uninstalled it. Nagle, priority, overlay, prefetch, and dynamic tick were cleared.'
 }
 function Invoke-Apply {
-  Write-Log 'Apex 1.3 apply'
+  Write-Log 'Apex 1.4 apply'
   if (Get-Command Write-MetricsReport -ErrorAction SilentlyContinue) { Write-MetricsReport 'before' $MetricsFile }
   Write-Host 'Apex safety: restore point will be attempted. High-risk items still require yes.'
   $picked = @($opts.Keys | Where-Object { $opts[$_] })
@@ -217,7 +233,7 @@ function Invoke-Apply {
   $before += (powercfg /getactivescheme)
   foreach ($svc in @('DiagTrack','SysMain','WSearch','wuauserv','WinDefend')) { try { $before += "$svc $((Get-Service $svc -ErrorAction Stop).StartType)" } catch { $before += "$svc missing" } }
   Set-Content -Path $Before -Value $before
-  try { Enable-ComputerRestore -Drive 'C:\' -ErrorAction SilentlyContinue; Checkpoint-Computer -Description 'Apex 1.3 before changes' -RestorePointType 'MODIFY_SETTINGS' -ErrorAction Stop; Write-Log 'Restore point created.' } catch { Write-Log 'Restore point skipped.' }
+  try { Enable-ComputerRestore -Drive 'C:\' -ErrorAction SilentlyContinue; Checkpoint-Computer -Description 'Apex 1.4 before changes' -RestorePointType 'MODIFY_SETTINGS' -ErrorAction Stop; Write-Log 'Restore point created.' } catch { Write-Log 'Restore point skipped.' }
   if ($opts.apps) { Remove-InboxApps }
   if ($opts.ads) {
     foreach ($n in @('SubscribedContent-338389Enabled','SubscribedContent-310093Enabled','SubscribedContent-338388Enabled','SubscribedContent-338393Enabled','SubscribedContent-353694Enabled','SubscribedContent-353696Enabled','SilentInstalledAppsEnabled','SystemPaneSuggestionsEnabled','SoftLandingEnabled')) { Set-Dword 'HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' $n 0 }
@@ -353,22 +369,23 @@ function Invoke-Apply {
 }
 Assert-Admin
 if (Test-Path $TickFile) { Load-Ticks }
-Write-Log 'Apex 1.3 started'
+Write-Log 'Apex 1.4 started'
 $hw = Get-HardwareInfo
 Write-Host "CPU: $($hw.CPU) ($($hw.Cores)c/$($hw.Threads)t)" -ForegroundColor DarkCyan
 Write-Host "GPU: $($hw.GPU)" -ForegroundColor DarkCyan
 Write-Host "RAM: $($hw.RAM) | $($hw.OS)" -ForegroundColor DarkCyan
 while ($true) {
   Write-Host ''
-  Write-Host 'Apex 1.3'
+  Write-Host 'Apex 1.4'
   Show-Opts
-  Write-Host 's Safe   ad Advanced   e Extreme'
-  Write-Host 'a apply   d dry run   r revert   c scan   w report   f on-only   n clear   s save   l load   h help   0 exit'
+  Write-Host 's Safe   ad Advanced   e Extreme   x Expert'
+  Write-Host 'a apply   d dry run   r revert   c scan   w report   f on-only   n clear   s save   l load   h help   x expert   0 exit'
   $choice = Read-Host 'Choose'
   switch ($choice) {
     's' { Set-Preset 'safe' }
     'ad' { Set-Preset 'advanced' }
     'e' { Set-Preset 'extreme' }
+    'x' { Show-Expert }
     'a' { Invoke-Apply }
     'd' { Invoke-Dry }
     'r' { Invoke-Revert }
