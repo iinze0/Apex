@@ -1,6 +1,6 @@
 # Apex
 
-Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stability and rollback are built in. Hardware-aware adaptive tweaks (v1.2+).
+Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stability and rollback are built in. Hardware-aware adaptive tweaks. Modular structure with basic metrics (v1.3).
 
 ## Philosophy
 
@@ -9,6 +9,8 @@ Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stab
 - **Customizable** — individual options, not one-click only
 - **Reversible** — restore points and selective rollback
 - **Hardware aware** — detects CPU, GPU, RAM, laptop; adapts service split, memory compression, hybrid policy, and HAGS notes
+- **Modular** — `Modules/` folder, loaded automatically
+- **Measurable** — basic metrics logged before and after apply
 
 ## Tiers
 
@@ -20,20 +22,27 @@ Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stab
 
 ## Quick start
 
-1. Download the latest release.
-2. Keep `Apex.bat` and `Apex.ps1` in the same folder.
+1. Download the latest release (include the `Modules` folder).
+2. Keep `Apex.bat`, `Apex.ps1`, and the `Modules` folder together.
 3. Right-click `Apex.bat` → Run as administrator.
-4. Hardware info prints on start. Adaptive decisions are logged when CPU or HAGS is applied.
+4. Hardware info prints on start. Metrics are logged on apply.
 5. `s` = Safe, `ad` = Advanced, `e` = Extreme.
 6. `d` = dry run. `r` = revert. `a` = apply. `c` = scan.
 
-## Adaptive behavior (v1.2)
+## Modules (v1.3)
 
-- Service split threshold scales with core count (higher on 8+ and 16+ core CPUs).
-- Memory compression is disabled only if RAM ≥ 16 GB.
-- Hybrid CPUs (Intel 12th gen+, Core Ultra, or high thread/core ratio) get performance-core preference.
+- `Modules/Hardware.ps1` — CPU, GPU, RAM, OS, laptop detection
+- `Modules/Metrics.ps1` — free RAM, process count, CPU load, free disk (before/after)
+
+New `.ps1` files dropped into `Modules/` are loaded automatically.
+
+## Adaptive behavior
+
+- Service split threshold scales with core count.
+- Memory compression disabled only if RAM ≥ 16 GB.
+- Hybrid CPUs get performance-core preference.
 - Discrete GPU detection is noted when HAGS is enabled.
-- Laptop detection is logged; DC power settings already match AC.
+- Laptop detection is logged.
 
 ## Safety
 
@@ -44,6 +53,6 @@ Tiered Windows optimizer. Safe by default. Advanced and Extreme are opt-in. Stab
 
 ## Status
 
-Core engine functional (v1.2). Hardware detection and adaptive tweaks present. Next: modular modules, performance metrics, Expert mode UI.
+Core engine functional (v1.3). Modular structure and basic metrics present. Next: Expert mode UI, more detailed performance metrics, additional modules.
 
 MIT License. Not affiliated with Talon or any other optimizer.
