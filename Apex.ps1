@@ -1,4 +1,4 @@
-# Apex 1.9
+# Apex 2.0
 $ErrorActionPreference = 'Continue'
 $Log = Join-Path $PSScriptRoot 'Apex-log.txt'
 $TickFile = Join-Path $PSScriptRoot 'Apex-ticks.txt'
@@ -14,7 +14,14 @@ if (Test-Path $modDir) {
 $MetricsFile = Join-Path $PSScriptRoot 'Apex-metrics.txt'
 
 function Write-Log([string]$msg) { Add-Content -Path $Log -Value ('{0}  {1}' -f (Get-Date -Format 'yyyy-MM-dd HH:mm:ss'), $msg); Write-Host $msg }
-function Assert-Admin { $p = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent()); if (-not $p.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) { Write-Host 'Not running as administrator.'; exit 1 } }
+function Assert-Admin {
+  $p = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+  if (-not $p.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Write-Host 'Not running as administrator. Prompting...'
+    Start-Process powershell -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File "' + $PSCommandPath + '"' -Verb RunAs
+    exit
+  }
+}
 function Set-Dword([string]$path, [string]$name, [int]$value) { if (-not (Test-Path $path)) { New-Item -Path $path -Force | Out-Null }; New-ItemProperty -Path $path -Name $name -Value $value -PropertyType DWord -Force | Out-Null }
 function Set-ServiceMode([string]$name, [string]$mode) { try { if ($mode -eq 'Disabled') { Stop-Service -Name $name -Force -ErrorAction SilentlyContinue; Set-Service -Name $name -StartupType Disabled -ErrorAction Stop } elseif ($mode -eq 'Automatic') { Set-Service -Name $name -StartupType Automatic -ErrorAction Stop; Start-Service -Name $name -ErrorAction SilentlyContinue } else { Set-Service -Name $name -StartupType Manual -ErrorAction Stop }; Write-Log "$name -> $mode" } catch { Write-Log "$name unchanged: $($_.Exception.Message)" } }
 $opts = [ordered]@{ apps=$false; ads=$false; tasks=$false; privacy=$false; telemetry=$false; search=$false; xbox=$false; gamedvr=$false; cpu=$false; idle=$false; hags=$false; visuals=$false; mouse=$false; sticky=$false; focus=$false; temp=$false; startup=$false; hibernate=$false; bluetooth=$false; print=$false; ipv6=$false; onedrive=$false; browser=$false; updates=$false; defender=$false }
@@ -221,7 +228,7 @@ function Invoke-Revert {
   Write-Log 'Revert finished. Restart. Store apps stay removed. Edge stays removed if you uninstalled it. Nagle, priority, overlay, prefetch, and dynamic tick were cleared.'
 }
 function Invoke-Apply {
-  Write-Log 'Apex 1.9 apply'
+  Write-Log 'Apex 2.0 apply'
   if (Get-Command Write-MetricsReport -ErrorAction SilentlyContinue) { Write-MetricsReport 'before' $MetricsFile }
   Write-Host 'Apex safety: restore point will be attempted. High-risk items still require yes.'
   $highRisk = @('idle','temp','startup','ipv6','onedrive','browser','updates','defender') | Where-Object { $opts[$_] }
@@ -237,7 +244,7 @@ function Invoke-Apply {
   $before += (powercfg /getactivescheme)
   foreach ($svc in @('DiagTrack','SysMain','WSearch','wuauserv','WinDefend')) { try { $before += "$svc $((Get-Service $svc -ErrorAction Stop).StartType)" } catch { $before += "$svc missing" } }
   Set-Content -Path $Before -Value $before
-  try { Enable-ComputerRestore -Drive 'C:\' -ErrorAction SilentlyContinue; Checkpoint-Computer -Description 'Apex 1.9 before changes' -RestorePointType 'MODIFY_SETTINGS' -ErrorAction Stop; Write-Log 'Restore point created.' } catch { Write-Log 'Restore point skipped.' }
+  try { Enable-ComputerRestore -Drive 'C:\' -ErrorAction SilentlyContinue; Checkpoint-Computer -Description 'Apex 2.0 before changes' -RestorePointType 'MODIFY_SETTINGS' -ErrorAction Stop; Write-Log 'Restore point created.' } catch { Write-Log 'Restore point skipped.' }
   if ($opts.apps) { Remove-InboxApps }
   if ($opts.ads) {
     foreach ($n in @('SubscribedContent-338389Enabled','SubscribedContent-310093Enabled','SubscribedContent-338388Enabled','SubscribedContent-338393Enabled','SubscribedContent-353694Enabled','SubscribedContent-353696Enabled','SilentInstalledAppsEnabled','SystemPaneSuggestionsEnabled','SoftLandingEnabled')) { Set-Dword 'HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' $n 0 }
@@ -373,14 +380,14 @@ function Invoke-Apply {
 }
 Assert-Admin
 if (Test-Path $TickFile) { Load-Ticks }
-Write-Log 'Apex 1.9 started'
+Write-Log 'Apex 2.0 started'
 $hw = Get-HardwareInfo
 Write-Host "CPU: $($hw.CPU) ($($hw.Cores)c/$($hw.Threads)t)" -ForegroundColor DarkCyan
 Write-Host "GPU: $($hw.GPU)" -ForegroundColor DarkCyan
 Write-Host "RAM: $($hw.RAM) | $($hw.OS)" -ForegroundColor DarkCyan
 while ($true) {
   Write-Host ''
-  Write-Host 'Apex 1.9'
+  Write-Host 'Apex 2.0'
   Show-Opts
   Write-Host 's Safe   ad Advanced   e Extreme   x Expert   p Profile   m Metrics   w Warnings   b Benchmark   st Status   cs SaveProfile   cl LoadProfile   clist ListProfiles'
   Write-Host 'a apply   d dry run   r revert   c scan   w report   f on-only   n clear   s save   l load   h help   x expert   p profile   m metrics   w warnings   b benchmark   st status   cs saveprofile   cl loadprofile   clist listprofiles   0 exit'
