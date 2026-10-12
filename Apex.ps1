@@ -1,4 +1,4 @@
-# Apex 1.0
+# Apex 1.1
 $ErrorActionPreference = 'Continue'
 $Log = Join-Path $PSScriptRoot 'Apex-log.txt'
 $TickFile = Join-Path $PSScriptRoot 'Apex-ticks.txt'
@@ -6,6 +6,28 @@ $Last = Join-Path $PSScriptRoot 'Apex-last.txt'
 $Before = Join-Path $PSScriptRoot 'Apex-before.txt'
 $Report = Join-Path $PSScriptRoot 'Apex-report.txt'
 function Write-Log([string]$msg) { Add-Content -Path $Log -Value ('{0}  {1}' -f (Get-Date -Format 'yyyy-MM-dd HH:mm:ss'), $msg); Write-Host $msg }
+function Get-HardwareInfo {
+  $info = @{}
+  try {
+    $cpu = Get-CimInstance Win32_Processor | Select-Object -First 1
+    $info.CPU = $cpu.Name.Trim()
+    $info.Cores = $cpu.NumberOfCores
+    $info.Threads = $cpu.NumberOfLogicalProcessors
+  } catch { $info.CPU = 'Unknown' }
+  try {
+    $gpu = Get-CimInstance Win32_VideoController | Where-Object { $_.Name -notmatch 'Microsoft|Remote|Virtual' } | Select-Object -First 1
+    $info.GPU = if ($gpu) { $gpu.Name.Trim() } else { 'Unknown' }
+  } catch { $info.GPU = 'Unknown' }
+  try {
+    $ram = [math]::Round((Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory / 1GB, 1)
+    $info.RAM = "$ram GB"
+  } catch { $info.RAM = 'Unknown' }
+  try {
+    $os = Get-CimInstance Win32_OperatingSystem
+    $info.OS = "$($os.Caption) $($os.Version)"
+  } catch { $info.OS = 'Unknown' }
+  return $info
+}
 function Assert-Admin { $p = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent()); if (-not $p.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) { Write-Host 'Not running as administrator.'; exit 1 } }
 function Set-Dword([string]$path, [string]$name, [int]$value) { if (-not (Test-Path $path)) { New-Item -Path $path -Force | Out-Null }; New-ItemProperty -Path $path -Name $name -Value $value -PropertyType DWord -Force | Out-Null }
 function Set-ServiceMode([string]$name, [string]$mode) { try { if ($mode -eq 'Disabled') { Stop-Service -Name $name -Force -ErrorAction SilentlyContinue; Set-Service -Name $name -StartupType Disabled -ErrorAction Stop } elseif ($mode -eq 'Automatic') { Set-Service -Name $name -StartupType Automatic -ErrorAction Stop; Start-Service -Name $name -ErrorAction SilentlyContinue } else { Set-Service -Name $name -StartupType Manual -ErrorAction Stop }; Write-Log "$name -> $mode" } catch { Write-Log "$name unchanged: $($_.Exception.Message)" } }
@@ -116,6 +138,10 @@ function Set-Focus {
   Write-Log 'Toast notifications off for this user.'
 }
 function Invoke-Scan {
+  $hw = Get-HardwareInfo
+  Write-Host "CPU: $($hw.CPU)"
+  Write-Host "GPU: $($hw.GPU)"
+  Write-Host "RAM: $($hw.RAM)"
   Write-Host (powercfg /getactivescheme)
   foreach ($svc in @('DiagTrack','SysMain','DoSvc','WSearch','XblGameSave','bthserv','Spooler','wuauserv','WinDefend')) {
     try { $st = (Get-Service -Name $svc -ErrorAction Stop).StartType } catch { $st = 'missing' }
@@ -181,7 +207,7 @@ function Invoke-Revert {
   Write-Log 'Revert finished. Restart. Store apps stay removed. Edge stays removed if you uninstalled it. Nagle, priority, overlay, prefetch, and dynamic tick were cleared.'
 }
 function Invoke-Apply {
-  Write-Log 'Apex 1.0 apply'
+  Write-Log 'Apex 1.1 apply'
   Write-Host 'Apex safety: restore point will be attempted. High-risk items still require yes.'
   $picked = @($opts.Keys | Where-Object { $opts[$_] })
   if ($picked.Count -eq 0) { Write-Host 'Nothing ticked.'; return }
@@ -192,7 +218,7 @@ function Invoke-Apply {
   $before += (powercfg /getactivescheme)
   foreach ($svc in @('DiagTrack','SysMain','WSearch','wuauserv','WinDefend')) { try { $before += "$svc $((Get-Service $svc -ErrorAction Stop).StartType)" } catch { $before += "$svc missing" } }
   Set-Content -Path $Before -Value $before
-  try { Enable-ComputerRestore -Drive 'C:\' -ErrorAction SilentlyContinue; Checkpoint-Computer -Description 'Apex 1.0 before changes' -RestorePointType 'MODIFY_SETTINGS' -ErrorAction Stop; Write-Log 'Restore point created.' } catch { Write-Log 'Restore point skipped.' }
+  try { Enable-ComputerRestore -Drive 'C:\' -ErrorAction SilentlyContinue; Checkpoint-Computer -Description 'Apex 1.1 before changes' -RestorePointType 'MODIFY_SETTINGS' -ErrorAction Stop; Write-Log 'Restore point created.' } catch { Write-Log 'Restore point skipped.' }
   if ($opts.apps) { Remove-InboxApps }
   if ($opts.ads) {
     foreach ($n in @('SubscribedContent-338389Enabled','SubscribedContent-310093Enabled','SubscribedContent-338388Enabled','SubscribedContent-338393Enabled','SubscribedContent-353694Enabled','SubscribedContent-353696Enabled','SilentInstalledAppsEnabled','SystemPaneSuggestionsEnabled','SoftLandingEnabled')) { Set-Dword 'HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' $n 0 }
@@ -321,10 +347,14 @@ function Invoke-Apply {
 }
 Assert-Admin
 if (Test-Path $TickFile) { Load-Ticks }
-Write-Log 'Apex 1.0 started'
+Write-Log 'Apex 1.1 started'
+$hw = Get-HardwareInfo
+Write-Host "CPU: $($hw.CPU) ($($hw.Cores)c/$($hw.Threads)t)" -ForegroundColor DarkCyan
+Write-Host "GPU: $($hw.GPU)" -ForegroundColor DarkCyan
+Write-Host "RAM: $($hw.RAM) | $($hw.OS)" -ForegroundColor DarkCyan
 while ($true) {
   Write-Host ''
-  Write-Host 'Apex 1.0'
+  Write-Host 'Apex 1.1'
   Show-Opts
   Write-Host 's Safe   ad Advanced   e Extreme'
   Write-Host 'a apply   d dry run   r revert   c scan   w report   f on-only   n clear   s save   l load   h help   0 exit'
